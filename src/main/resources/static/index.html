@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  
+  	<style>
+		  .divNote{
+			  width: 100px;
+			  
+			  border: 1px black solid;
+			  padding: 20px;
+		  }
+		  
+		  .divNote span{
+			  font-weight: bold;
+		  }
+	</style>
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+          <span class="navbar-brand mb-0 h1">GESTORE NOTE</span>
+        </div>
+      </nav>
+
+      <button class="btn btn-primary m-5" onclick="visualizzaNote()">Visualizza le note</button>
+      <button class="btn btn-primary m-5" onclick="inviaNote()">Invia nota</button>
+
+      <button class="btn btn-primary m-5" onclick="visualizzaNoteDiv()">Visualizza le note nei div</button>
+
+      <button class="btn btn-primary m-5" onclick="location.href='form.html'">Invia nota dal form</button>
+      
+
+
+      <ul id="lista">
+
+      </ul>
+
+
+
+      <script>
+        
+      
+      var n = 1;
+      function visualizzaNote(){
+            console.log("Sono nella funzione");
+            fetch("http://localhost:8080/notes")
+            .then(res => res.json())
+            .then(listaNote => 
+            {
+				s = ""
+				for (nota of listaNote){
+					s += `<li>${nota.title} ${nota.content} </li>`;
+				}
+				lista.innerHTML = s;
+			});
+        }
+
+        function visualizzaNoteDiv(){
+            console.log("Sono nella funzione");
+            console
+            fetch("http://localhost:8080/notes")
+            .then(res => res.json())
+            .then(listaNote => 
+            {
+                console.log(listaNote);
+				s = ""
+				for (nota of listaNote){
+					s += `<li>
+							<div class="divNote" onclick="elimina(${nota.id})">
+								<span>${nota.title}</span> <br> ${nota.content} 
+				
+							</div>
+						  </li>`;
+				}
+				lista.innerHTML = s;
+			});
+        }
+
+        function inviaNote(){
+            
+            var newNota = {"title": "nuova nota " + n, "content": "contenuto della nuova nota"};
+
+            n++;
+
+            fetch("http://localhost:8080/notes", 
+            {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newNota)
+            }
+            )
+        }
+
+        //visualizzaNote();
+
+        function elimina(id)
+        {
+            console.log("eliminazione id" + id);
+            fetch("http://localhost:8080/notesDelete/" + id,
+            {
+                method: 'DELETE'
+            })
+            .then(visualizzaNoteDiv());
+        }
+
+      </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+  </body>
+</html>
